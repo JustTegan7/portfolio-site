@@ -1,84 +1,226 @@
-// src/pages/Projects.jsx
-import React from 'react';
+// Unified Projects page: Programming + Social subsections
+// Cards are minimal (title only). Click → modal with
+// centered title + colored header, split: Description | Tools/Languages.
+import React, { useState } from 'react';
+import ProjectCard from '../components/ProjectCard';
+import Modal from '../components/Modal';
+
+// Teal header for programming, Beige for social
+const HEADER = { programming: '#154D57', social: '#B7A08B' };
 
 const Projects = () => {
-  const codingProjects = [
+  const programmingProjects = [
     {
       title: 'NeuraNest',
-      description: 'A smart home server project built with Raspberry Pi. Features include ad-blocking, cloud sync, and AI integration.',
-      link: '#',
+      languages: ['Python', 'Bash', 'YAML'],
+      tools: ['FastAPI', 'Docker', 'Pi-hole (roadmap)', 'OpenAI (later)'],
+      hardware: ['Raspberry Pi 5', 'External HDD/SSD'],
+      description:
+        'Home server hub: custom file manager now; roadmap adds Pi-hole, AI assistant, energy dashboard, and a wall-mounted tablet UI.',
+      links: { live: '', code: 'https://github.com/JustTegan7/neuranest' },
+      kind: 'programming',
     },
     {
       title: 'MediScan',
-      description: 'AI-powered tool to analyze medical symptoms and images. Built with GPT-4 Vision and FastAPI.',
-      link: '#',
+      languages: ['JavaScript', 'Python'],
+      tools: ['React', 'FastAPI', 'GPT-4 Vision (prototype)'],
+      hardware: ['Local dev PC (future: secure cloud)'],
+      description:
+        'Upload symptoms/images → preliminary explanations. Emphasis on UX clarity and safety; later: custom model training.',
+      links: { live: '', code: 'https://github.com/JustTegan7' },
+      kind: 'programming',
     },
     {
       title: 'MediStock',
-      description: 'Pharmacy inventory system with role-based access, expiry tracking, batch logs, and analytics dashboard.',
-      link: '#',
+      languages: ['JavaScript', 'SQL'],
+      tools: ['React', 'Node/Express', 'Postman', 'CSV/PDF export'],
+      hardware: ['Dev PC (future cloud deploy)'],
+      description:
+        'Pharmacy inventory with roles, expiry tracking, lot/batch logging, reorders, analytics, and exports. Mirrors real operations.',
+      links: { live: '', code: 'https://github.com/JustTegan7/medistock' },
+      kind: 'programming',
     },
     {
-      title: 'Tegan Portfolio Site',
-      description: 'This personal website — a React and Tailwind-powered portfolio built to showcase my work, story, and growth.',
-      link: '#',
+      title: 'Portfolio Site',
+      languages: ['JavaScript', 'HTML', 'CSS'],
+      tools: ['React', 'React Router'],
+      hardware: ['N/A'],
+      description:
+        'Recruiter-first portfolio. Fast routing, accessible UI, and tight storytelling focused on impact.',
+      links: { live: '', code: 'https://github.com/JustTegan7' },
+      kind: 'programming',
     },
   ];
 
   const socialProjects = [
     {
       title: 'FaZeAfterDark',
-      description: 'A TikTok & YouTube Shorts page sharing the funniest and most viral FaZe Clan moments.',
-      link: 'https://www.tiktok.com/@fazeafterdark',
+      languages: ['—'],
+      tools: ['CapCut/Premiere', 'ElevenLabs (VO)', 'Auto-subtitles'],
+      hardware: ['iPhone', 'PC (batching)'],
+      description:
+        'Viral FaZe clips. Weekly batch 14 clips, daily posting cadence, iterate on hooks and retention.',
+      links: { live: 'https://www.tiktok.com/@fazeafterdark' },
+      kind: 'social',
     },
     {
       title: 'SmoshUnhinged',
-      description: 'A social channel for curated Smosh clips designed to blow up on TikTok and Reels.',
-      link: 'https://www.tiktok.com/@smoshunhinged',
+      languages: ['—'],
+      tools: ['CapCut/Premiere', 'Subtitle tools', 'Analytics dashboards'],
+      hardware: ['iPhone'],
+      description:
+        'Curated Smosh moments tailored for TikTok/Reels. Tight story beats and mobile-safe framing.',
+      links: { live: 'https://www.tiktok.com/@smoshunhinged' },
+      kind: 'social',
     },
     {
       title: 'MicrowaveMinutes',
-      description: 'A short-form storytelling channel with bizarre, hilarious, and scroll-stopping tales for the modern attention span.',
-      link: 'https://www.tiktok.com/@microwaveminutes',
+      languages: ['—'],
+      tools: ['AI TTS', 'Subtitle tools', 'Mobile editors'],
+      hardware: ['iPhone'],
+      description:
+        'Short-form storytelling with twist endings. Phone-first pipeline: VO → subs → BG gameplay.',
+      links: { live: 'https://www.tiktok.com/@microwaveminutes' },
+      kind: 'social',
     },
   ];
 
-  const ProjectCard = ({ title, description, link }) => (
-    <div className="bg-white rounded-lg shadow p-6 border hover:shadow-md transition">
-      <h3 className="text-xl font-semibold mb-2">{title}</h3>
-      <p className="text-gray-700 mb-3">{description}</p>
-      <a
-        href={link}
-        target="_blank"
-        rel="noreferrer"
-        className="text-blue-600 font-medium hover:underline"
-      >
-        Visit
-      </a>
-    </div>
-  );
+  // modal state
+  const [open, setOpen] = useState(false);
+  const [active, setActive] = useState(null);
+
+  const openModal = (item) => {
+    setActive(item);
+    setOpen(true);
+  };
+
+  // responsive grid
+  const grid = {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
+    gap: 16,
+  };
+
+  // pick header color per project kind
+  const headerColor = active?.kind === 'social' ? HEADER.social : HEADER.programming;
 
   return (
-    <div className="max-w-5xl mx-auto px-6 py-16">
-      <h2 className="text-3xl font-bold mb-8 text-center">Projects</h2>
+    <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '3rem 1rem' }}>
+      <h2 style={{ fontSize: '2rem', fontWeight: 700, textAlign: 'center', marginBottom: '2rem' }}>
+        Projects
+      </h2>
 
-      <div className="mb-12">
-        <h3 className="text-2xl font-semibold mb-6">💻 Coding Projects</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {codingProjects.map((project, index) => (
-            <ProjectCard key={index} {...project} />
-          ))}
+      {/* unified section with two subsections */}
+      <section>
+        {/* Programming */}
+        <div style={{ marginBottom: '3rem' }}>
+          <h3 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '1rem' }}>💻 Programming Projects</h3>
+          <div style={grid}>
+            {programmingProjects.map((p) => (
+              <ProjectCard key={p.title} title={p.title} onClick={() => openModal(p)} />
+            ))}
+          </div>
         </div>
-      </div>
 
-      <div>
-        <h3 className="text-2xl font-semibold mb-6">📱 Social Media Channels</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {socialProjects.map((project, index) => (
-            <ProjectCard key={index} {...project} />
-          ))}
+        {/* Social */}
+        <div>
+          <h3 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '1rem' }}>📱 Social Media Projects</h3>
+          <div style={grid}>
+            {socialProjects.map((p) => (
+              <ProjectCard key={p.title} title={p.title} onClick={() => openModal(p)} />
+            ))}
+          </div>
         </div>
-      </div>
+      </section>
+
+      {/* Modal */}
+      <Modal open={open} onClose={() => setOpen(false)} title={active?.title} titleBg={headerColor}>
+        {active && (
+          <div>
+            {/* Optional quick meta */}
+            {active.hardware && (
+              <p style={{ margin: '0 0 10px', fontSize: '0.95rem' }}>
+                <strong>Hardware:</strong> {active.hardware.join(', ')}
+              </p>
+            )}
+
+            {/* 2-col split on md+ */}
+            <div style={{ display: 'grid', gap: 16 }}>
+              <style>
+                {`
+                  @media (min-width: 700px) {
+                    .split-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+                  }
+                `}
+              </style>
+
+              <div className="split-2">
+                {/* Description */}
+                <section>
+                  <h4 style={{ margin: '8px 0 6px' }}>Description</h4>
+                  <p style={{ marginTop: 0 }}>{active.description}</p>
+                </section>
+
+                {/* Tools & Languages */}
+                <section>
+                  <h4 style={{ margin: '8px 0 6px' }}>Tools & Languages</h4>
+                  <p style={{ margin: '0 0 6px' }}>
+                    <strong>Languages:</strong> {active.languages?.join(', ') || '—'}
+                  </p>
+                  <div>
+                    <strong>Programs/Tools:</strong>
+                    <ul style={{ margin: '6px 0 0', paddingLeft: '1.2rem' }}>
+                      {(active.tools || ['—']).map((t, i) => (
+                        <li key={i}>{t}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </section>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 16 }}>
+              {active.links?.code && (
+                <a
+                  href={active.links.code}
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{
+                    background: '#fff',
+                    color: '#0f172a',
+                    border: '2px solid #0f172a', // ✅ fixed quotes
+                    padding: '8px 12px',
+                    borderRadius: 8,
+                    textDecoration: 'none',
+                    fontWeight: 600,
+                  }}
+                >
+                  Code
+                </a>
+              )}
+              {active.links?.live && (
+                <a
+                  href={active.links.live}
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{
+                    background: '#154D57',
+                    color: '#fff',
+                    border: '2px solid #0f172a',
+                    padding: '8px 12px',
+                    borderRadius: 8,
+                    textDecoration: 'none',
+                    fontWeight: 600,
+                  }}
+                >
+                  Live
+                </a>
+              )}
+            </div>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 };
